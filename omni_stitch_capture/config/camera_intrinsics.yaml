@@ -1,0 +1,27 @@
+cam_0:
+  cam_model: "omni"
+  cam_width: 1920            # 整数
+  cam_height: 1200           # 整数
+  cam_xi: 1.21133694         # 必须带小数点
+  cam_fu: 973.451786
+  cam_fv: 977.190181
+  cam_pu: 964.768129
+  cam_pv: 608.968428
+  cam_d0: 0.0680902
+  cam_d1: -0.1198988
+  cam_d2: -0.0004192
+  cam_d3: 0.0062751
+
+cam_1:
+  cam_model: "omni"
+  cam_width: 1920
+  cam_height: 1200
+  cam_xi: 1.02927047
+  cam_fu: 871.723593
+  cam_fv: 882.129247
+  cam_pu: 950.069513
+  cam_pv: 623.507850
+  cam_d0: -0.0290538
+  cam_d1: -0.0576329
+  cam_d2: -0.0010097
+  cam_d3: -0.0104976

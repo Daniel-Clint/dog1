@@ -1,0 +1,87 @@
+common:
+  num_of_cameras: 2                # 开启多相机支持
+  lid_topic: "/livox/lidar"        #
+  imu_topic: "/livox/imu"          #
+  img_en: 1
+  lidar_en: 1
+
+extrin_calib:
+  # Lidar 到 IMU 的外参 (Mid-360 内部参数)
+  extrinsic_T: [-0.011, -0.02329, 0.04412]
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  
+  # 多相机列表配置
+  cameras:
+    - cam_id: 0
+      img_topic: "/fisheye/left/image_raw"
+      Rcl: [ 0.6957, -0.7181, -0.0130, 0.2788, 0.2867, -0.9165, 0.6619, 0.6340, 0.3997 ]
+      Pcl: [-0.02389, -0.00272, -0.03808]
+    - cam_id: 1
+      img_topic: "/fisheye/right/image_raw"
+      Rcl: [ -0.7017, -0.7120, -0.0246, 0.2773, -0.2410, -0.9300, 0.6562, -0.6594, 0.3666 ]
+      Pcl: [-0.01374, -0.01552, -0.07309]
+
+
+vio:
+  adaptive_cov_en: true            # 开启自适应协方差
+  cross_view_migration_en: true     # 开启跨视角特征迁移
+  max_visual_points: 150
+  photometric_threshold: 60.0      # 消防场景建议调高此阈值
+
+preprocess:
+  lidar_type: 1                    
+  scan_line: 4
+  blind: 0.5                       # 减小近距离盲区以适应机械臂操作
+
+vio:
+  max_iterations: 5
+  outlier_threshold: 300                  # 针对动态四足环境，适当调大阈值
+  img_point_cov: 100 
+  patch_size: 8
+  patch_pyrimid_level: 4
+  normal_en: true
+  raycast_en: false
+  inverse_composition_en: false
+  exposure_estimate_en: true              # 消防场景光照剧变，建议开启曝光
+  inv_expo_cov: 0.1
+
+imu:
+  imu_en: true
+ 
+  imu_int_frame: 30
+  acc_cov: 0.5 
+  gyr_cov: 0.3 
+  b_acc_cov: 0.0001 
+  b_gyr_cov: 0.0001 
+
+lio:
+  max_iterations: 5
+  dept_err: 0.02
+  beam_err: 0.05
+  min_eigen_value: 0.0025 
+  voxel_size: 0.5
+  max_layer: 2
+  max_points_num: 50
+  layer_init_num: [5, 5, 5, 5, 5]
+
+local_map:  
+  map_sliding_en: false
+  half_map_size: 100
+  sliding_thresh: 8
+
+uav:                                      # 四足机器人通常关闭重力对齐初始
+  imu_rate_odom: false
+  gravity_align_en: false
+
+publish:
+  dense_map_en: true                      # 开启稠密点云
+  pub_effect_point_en: false 
+  pub_plane_en: false
+  pub_scan_num: 1
+  blind_rgb_points: 0.0
+
+pcd_save:
+  pcd_save_en: true
+  type: 0 
+  filter_size_pcd: 0.01
+  interval: -1
