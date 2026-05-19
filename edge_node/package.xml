@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>edge_node</name>
+  <version>0.0.1</version>
+  <description>Minimal edge agent package for robot dog backend communication.</description>
+
+  <maintainer email="daniel@example.com">daniel</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>roscpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>actionlib_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>omni_stitch_capture</depend>
+  <depend>pcl_ros</depend>
+  <depend>tf</depend>
+  <depend>cv_bridge</depend>
+  <depend>image_transport</depend>
+
+  <export/>
+</package>
