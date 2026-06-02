@@ -1,0 +1,20 @@
+# CMakeLists.txt at root level (symlink)
+/CMakeLists.txt
+
+# Build directories
+build/
+devel/
+.catkin_workspace
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/

@@ -1,0 +1,46 @@
+<launch>
+  <!-- /body_cloud is published by fast_livo in aft_mapped (same as body_frame). -->
+  <arg name="input_cloud_topic" default="/body_cloud"/>
+  <arg name="body_frame" default="aft_mapped"/>
+  <arg name="world_frame" default="camera_init"/>
+  <arg name="output_map_topic" default="/map"/>
+
+  <arg name="z_min" default="-0.0"/>
+  <arg name="z_max" default="0.3"/>
+  <arg name="max_range" default="15.0"/>
+  <arg name="grid_size" default="0.2"/>
+  <arg name="area_size" default="50.0"/>
+
+  <!-- Integer log-odds update: hit +hit_delta, free +free_delta, clamp [hit_lower, hit_upper] -->
+  <arg name="hit_delta" default="100"/>
+  <arg name="free_delta" default="-0"/>
+  <arg name="hit_upper" default="128"/>
+  <arg name="hit_lower" default="0"/>
+
+  <arg name="save_2d_grid" default="true"/>
+  <arg name="save_dir" default="$(find system)/map/2d_grid"/>
+
+  <node pkg="light_terrain_analysis"
+        type="light_terrain_analysis_node"
+        name="light_terrain_analysis"
+        output="screen">
+    <param name="input_cloud_topic" value="$(arg input_cloud_topic)"/>
+    <param name="body_frame" value="$(arg body_frame)"/>
+    <param name="world_frame" value="$(arg world_frame)"/>
+    <param name="output_map_topic" value="$(arg output_map_topic)"/>
+
+    <param name="z_min" value="$(arg z_min)"/>
+    <param name="z_max" value="$(arg z_max)"/>
+    <param name="max_range" value="$(arg max_range)"/>
+    <param name="grid_size" value="$(arg grid_size)"/>
+    <param name="area_size" value="$(arg area_size)"/>
+
+    <param name="hit_delta" value="$(arg hit_delta)"/>
+    <param name="free_delta" value="$(arg free_delta)"/>
+    <param name="hit_upper" value="$(arg hit_upper)"/>
+    <param name="hit_lower" value="$(arg hit_lower)"/>
+
+    <param name="save_2d_grid" value="$(arg save_2d_grid)"/>
+    <param name="save_dir" value="$(arg save_dir)"/>
+  </node>
+</launch>

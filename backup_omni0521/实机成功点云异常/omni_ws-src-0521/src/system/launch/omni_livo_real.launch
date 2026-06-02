@@ -1,0 +1,47 @@
+<launch>
+  <arg name="enable_livox" default="true"/>
+  <arg name="enable_lidars1" default="true"/>
+  <arg name="save_2d_grid" default="true"/>
+  <arg name="nav_rviz" default="false"/>
+
+  <arg name="edge_server_url" default="ws://202.38.68.70:5678/robotDog/ws/edge"/>
+  <arg name="edge_upload_url_template" default="ws://202.38.68.70:5678/robotDog/ws/edge"/>
+  <arg name="edge_robot_id" default="dog_01"/>
+
+  <arg name="motion_server_ip" default="10.21.31.103"/>
+  <arg name="motion_port" default="30000"/>
+  <arg name="motion_cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="motion_max_x" default="0.5"/>
+  <arg name="motion_max_y" default="0.5"/>
+  <arg name="motion_max_yaw" default="0.8"/>
+  <arg name="motion_timeout" default="0.3"/>
+
+  <include file="$(find system)/launch/omni_livo.launch">
+    <arg name="enable_livox" value="$(arg enable_livox)"/>
+    <arg name="enable_lidars1" value="$(arg enable_lidars1)"/>
+    <arg name="save_2d_grid" value="$(arg save_2d_grid)"/>
+  </include>
+
+  <include file="$(find nav_launch)/launch/launch_nav_real.launch">
+    <arg name="rviz" value="$(arg nav_rviz)"/>
+  </include>
+
+  <node pkg="m20control"
+        type="velocity_control.py"
+        name="cmd_vel_to_udp"
+        output="screen">
+    <param name="server_ip" value="$(arg motion_server_ip)"/>
+    <param name="port" value="$(arg motion_port)"/>
+    <param name="cmd_vel_topic" value="$(arg motion_cmd_vel_topic)"/>
+    <param name="max_x" value="$(arg motion_max_x)"/>
+    <param name="max_y" value="$(arg motion_max_y)"/>
+    <param name="max_yaw" value="$(arg motion_max_yaw)"/>
+    <param name="timeout" value="$(arg motion_timeout)"/>
+  </node>
+
+  <include file="$(find edge_node)/launch/edge_stitch.launch">
+    <arg name="server_url" value="$(arg edge_server_url)"/>
+    <arg name="upload_url_template" value="$(arg edge_upload_url_template)"/>
+    <arg name="robot_id" value="$(arg edge_robot_id)"/>
+  </include>
+</launch>

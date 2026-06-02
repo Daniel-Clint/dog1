@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>omni_stitch_capture</name>
+  <version>0.0.1</version>
+  <description>Sample stitched fisheye panoramas with pose from Omni-LIVO topics.</description>
+
+  <maintainer email="pray@example.com">pray</maintainer>
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <depend>message_generation</depend>
+  <depend>message_runtime</depend>
+  <depend>rospy</depend>
+  <depend>sensor_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>cv_bridge</depend>
+  <depend>message_filters</depend>
+  <depend>std_msgs</depend>
+
+  <export/>
+</package>

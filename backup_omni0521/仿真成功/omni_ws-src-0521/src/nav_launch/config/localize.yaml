@@ -1,0 +1,54 @@
+map_frame: map
+local_frame: local
+body_frame: body
+control_frame: baselink
+
+imu_topic: /livox/imu
+livox_topic: /livox/lidar
+
+init_rot_bias:
+  [
+    0.862363,0.00363635,0.506277,
+    0.00363635,0.999904,-0.0133758,
+    -0.506277,0.0133758, 0.862267,
+  ]
+
+horizon_imu_to_control_rot: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+
+horizon_imu_to_control_pos: [-0.34, -0.025, -0.92]
+
+z_min: -0.9
+z_max: 0.2
+x_min: -15.0
+x_max: 15.0
+y_min: -15.0
+y_max: 15.0
+
+obstacle_resolution: 0.05
+
+local_rate: 30.0
+loop_rate: 0.5
+publish_map_cloud: false
+
+lio_builder:
+  det_range: 60.0
+  cube_len: 300.0
+  scan_resolution: 0.2
+  map_resolution: 0.4
+  move_thresh: 1.5
+  align_gravity: true
+  imu_ext_rot: [1, 0, 0, 0, 1, 0, 0, 0, 1] # R_imu_lidar
+  imu_ext_pos: [-0.011, -0.02329, 0.04412] # t_imu_lidar
+  extrinsic_est_en: false
+  refine_resolution: 0.05
+  min_point_thresh: 200
+
+localizer:
+  refine_resolution: 0.1
+  rough_resolution: 0.5
+  refine_iter: 20
+  rough_iter: 50
+  thresh: 0.05
+  xy_offset: 0.1
+  yaw_offset: 0
+  yaw_resolution: 0.5

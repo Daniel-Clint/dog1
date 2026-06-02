@@ -1,0 +1,13 @@
+<launch>
+    <arg name="server_ip" default="192.168.1.2"/>
+    <arg name="server_port" default="8888"/>
+    
+    <!-- 启动TCP图像客户端节点 -->
+    <node pkg="lidars1" type="lidars1" name="lidars1" output="screen">
+        <param name="server_ip" value="$(arg server_ip)"/>
+        <param name="server_port" value="$(arg server_port)"/>
+    </node>
+    
+    <!-- 可选：启动RViz可视化 -->
+    <!-- <node pkg="rviz" type="rviz" name="rviz" args="-d $(find lidars1)/launch/image_view_ros1.rviz"/> -->
+</launch>

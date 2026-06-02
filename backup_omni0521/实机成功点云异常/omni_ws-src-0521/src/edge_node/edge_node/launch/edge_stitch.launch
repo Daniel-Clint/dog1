@@ -1,0 +1,72 @@
+<launch>
+  <!-- omni_stitch_capture inputs -->
+  <arg name="left_topic" default="/fisheye/left/image_raw" />
+  <arg name="right_topic" default="/fisheye/right/image_raw" />
+  <arg name="odom_topic" default="/aft_mapped_to_init" />
+  <arg name="output_capture_topic" default="/omni_stitch_capture/capture" />
+  <arg name="publish_legacy_topics" default="true" />
+  <arg name="intrinsics_path" default="$(find omni_stitch_capture)/config/camera_intrinsics.yaml" />
+  <arg name="config_path" default="$(find omni_stitch_capture)/config/mid360_multi_cam.yaml" />
+
+  <!-- edge agent settings -->
+  <arg name="server_url" default="ws://202.38.68.70:5678/robotDog/ws/edge" />
+  <arg name="upload_url_template" default="ws://202.38.68.70:5678/robotDog/ws/edge" />
+  <arg name="robot_id" default="dog_01" />
+  <arg name="enable_stitch_capture" default="true" />
+  <arg name="stitch_capture_topic" default="/omni_stitch_capture/capture" />
+
+  <!-- stitch params -->
+  <arg name="voxel_size" default="0.01" />
+
+  <node pkg="omni_stitch_capture"
+        type="omni_stitch_capture_node.py"
+        name="omni_stitch_capture_node"
+        output="screen"
+        launch-prefix="/usr/bin/python3">
+    <param name="left_topic" value="$(arg left_topic)" />
+    <param name="right_topic" value="$(arg right_topic)" />
+    <param name="odom_topic" value="$(arg odom_topic)" />
+    <param name="output_capture_topic" value="$(arg output_capture_topic)" />
+    <param name="publish_legacy_topics" value="$(arg publish_legacy_topics)" />
+    <param name="intrinsics_path" value="$(arg intrinsics_path)" />
+    <param name="config_path" value="$(arg config_path)" />
+    <param name="frame_id" value="stitched_sphere" />
+    <param name="left_camera_id" value="0" />
+    <param name="right_camera_id" value="1" />
+    <param name="max_pair_diff_sec" value="0.005" />
+    <param name="pose_match_max_diff_sec" value="0.10" />
+    <param name="pose_fallback_max_diff_sec" value="0.50" />
+    <param name="pose_time_offset_sec" value="0.0" />
+    <param name="auto_pose_time_offset" value="true" />
+    <param name="auto_pose_time_offset_trigger_sec" value="10.0" />
+    <param name="capture_spacing_m" value="4.0" />
+    <param name="corner_min_separation_m" value="1.0" />
+    <param name="corner_min_travel_m" value="2.0" />
+    <param name="corner_yaw_threshold_deg" value="60.0" />
+    <param name="candidate_frame_count" value="5" />
+    <param name="blur_min_laplacian_var" value="80.0" />
+    <param name="band_width" value="1920" />
+    <param name="band_height" value="960" />
+    <param name="canvas_height" value="960" />
+    <param name="canvas_anchor" value="top" />
+    <param name="yaw_min_deg" value="-180.0" />
+    <param name="yaw_max_deg" value="180.0" />
+    <param name="pitch_min_deg" value="-90.0" />
+    <param name="pitch_max_deg" value="90.0" />
+    <param name="max_incidence_deg" value="105.0" />
+    <param name="edge_blend_px" value="40.0" />
+    <param name="voxel_size" value="$(arg voxel_size)" />
+  </node>
+
+  <node pkg="edge_node"
+        type="edge_agent_node"
+        name="edge_agent_node"
+        output="screen">
+    <param name="server_url" value="$(arg server_url)" />
+    <param name="upload_url_template" value="$(arg upload_url_template)" />
+    <param name="robot_id" value="$(arg robot_id)" />
+    <param name="enable_stitch_capture" value="$(arg enable_stitch_capture)" />
+    <param name="stitch_capture_topic" value="$(arg stitch_capture_topic)" />
+  </node>
+</launch>
+

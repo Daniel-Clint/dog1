@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>system</name>
+  <version>0.0.1</version>
+  <description>System launch manager package for Omni-LIVO stack.</description>
+
+  <maintainer email="xuyuanfei@mail.ustc.edu.cn">xu</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>livox_ros_driver2</exec_depend>
+  <exec_depend>lidars1</exec_depend>
+  <exec_depend>fast_livo</exec_depend>
+  <exec_depend>light_terrain_analysis</exec_depend>
+  <exec_depend>rosbag</exec_depend>
+  <exec_depend>nav_launch</exec_depend>
+  <exec_depend>m20control</exec_depend>
+  <exec_depend>edge_node</exec_depend>
+  <exec_depend>omni_stitch_capture</exec_depend>
+
+  <export/>
+</package>

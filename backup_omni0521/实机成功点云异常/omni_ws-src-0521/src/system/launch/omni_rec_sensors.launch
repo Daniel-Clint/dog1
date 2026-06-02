@@ -1,0 +1,23 @@
+<launch>
+  <arg name="record_enable" default="true"/>
+  <arg name="bag_dir" default="$(env HOME)/bags"/>
+  <!-- <arg name="bag_dir" default="/media/xu/Acer/bags"/> -->
+  <arg name="bag_name" default="omni_sensors"/>
+  <arg name="bag_prefix" default="$(arg bag_dir)/$(arg bag_name)"/>
+
+  <include file="$(find livox_ros_driver2)/launch_ROS1/rviz_MID360.launch">
+    <arg name="rviz_enable" value="false"/>
+  </include>
+
+  <include file="$(find lidars1)/launch/lidars1.launch"/>
+
+  <!-- <include file="$(find fast_livo)/launch/fast_livo_mid360.launch"/> -->
+
+  <group if="$(arg record_enable)">
+    <node pkg="rosbag"
+          type="record"
+          name="record_omni_sensors"
+          output="screen"
+          args="--lz4 -b 2048 -O $(arg bag_prefix) /livox/lidar /livox/imu /fisheye/left/image_raw /fisheye/right/image_raw"/>
+  </group>
+</launch>

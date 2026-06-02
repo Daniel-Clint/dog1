@@ -1,0 +1,17 @@
+<launch>
+    <arg name="rviz" default="true" />
+    <arg name="loop" default="true" />
+    <arg name="clock" default="false" />
+    <arg name="bag_rate" default="1.0" />
+    <arg name="bag_path" default="$(env HOME)/Downloads/omni_sensors_20260416_173948.bag" />
+
+    <include file="$(find fast_livo)/launch/fast_livo_mid360.launch">
+        <arg name="rviz" value="$(arg rviz)" />
+    </include>
+
+    <node pkg="rosbag"
+          type="play"
+          name="play_omni_bag"
+          output="screen"
+          args="$(eval ('--clock ' if arg('clock') == 'true' else '') + ('-l ' if arg('loop') == 'true' else '') + '-r ' + str(arg('bag_rate')) + ' ' + arg('bag_path'))" />
+</launch>

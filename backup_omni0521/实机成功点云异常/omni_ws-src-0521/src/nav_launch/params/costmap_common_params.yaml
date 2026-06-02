@@ -1,0 +1,39 @@
+footprint: [[-0.32, -0.20], [-0.32, 0.20], [0.32, 0.20], [0.32, -0.20]]
+
+transform_tolerance: 0.5
+map_type: costmap
+
+obstacle_livox_layer:
+  enabled: true
+  combination_method: 1
+  observation_sources: "point_cloud"
+
+  #对传感器的坐标系和数据进行配置。这个也会用于代价地图添加和清除障碍物。例如，你可以用激光雷达传感器用于在代价地图添加障碍物，再添加kinect用于导航和清除障碍物。
+  point_cloud:
+    {
+      sensor_frame: body,
+      data_type: PointCloud2,
+      topic: /cloud_registered,
+      marking: true,
+      clearing: true,
+      max_obstacle_height: 0.5,
+      min_obstacle_height: -0.5,
+      obstacle_range: 5,
+      raytrace_range: 8
+    }
+
+inflation_global_layer:
+  enabled: true
+  cost_scaling_factor: 20.0 # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius: 0.5 # max. distance from an obstacle at which costs are incurred for planning paths.
+
+inflation_local_layer:
+  enabled: true
+  cost_scaling_factor: 20.0 # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius: 0.5  # max. distance from an obstacle at which costs are incurred for planning paths.
+
+
+static_layer:
+  enabled: true
+  track_unknown_space: true
+  map_topic: "/map"

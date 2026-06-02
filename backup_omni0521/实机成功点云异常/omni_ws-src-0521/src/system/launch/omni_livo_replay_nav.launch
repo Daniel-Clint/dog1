@@ -1,0 +1,84 @@
+<launch>
+  <arg name="rosbag_path" default="/home/daniel/data/omni_sensors.bag"/>
+  <arg name="loop" default="false"/>
+  <!-- Sim clock: rosbag publishes /clock; SLAM/nav nodes use bag time -->
+  <arg name="clock" default="true"/>
+  <arg name="bag_rate" default="1.0"/>
+  <!-- Seconds before bag playback starts (lets SLAM subscribers connect) -->
+  <arg name="bag_play_delay" default="3.0"/>
+  <!-- Seconds before SLAM stack starts (after rosbag node is up) -->
+  <arg name="stack_start_delay" default="1.0"/>
+  <!-- Seconds before move_base stack starts (after rosbag node is up) -->
+  <arg name="nav_start_delay" default="1.0"/>
+  <arg name="save_2d_grid" default="true"/>
+
+  <!-- Navigation (from launch_nav_sim.launch) -->
+  <arg name="home" default="/home/xu"/>
+  <arg name="nav_rviz" default="true"/>
+  <!-- Edge uplink -->
+  <arg name="edge_start_delay" default="2.0"/>
+  <arg name="edge_server_url" default="ws://192.168.0.23:8599/ws/edge"/>
+  <arg name="edge_upload_url_template" default="ws://192.168.0.23:8599/ws/edge"/>
+  <arg name="edge_robot_id" default="dog_01"/>
+
+  <!-- Do NOT set /use_sim_time globally: rosbag play would wait for /clock from itself (deadlock). -->
+
+  <group if="$(arg clock)">
+    <!-- 1) Start rosbag first (wall clock), publish /clock when playback begins -->
+    <node pkg="rosbag"
+          type="play"
+          name="play_omni_bag"
+          output="log"
+          args="$(eval '--clock -d ' + str(arg('bag_play_delay')) + (' -l ' if arg('loop') == 'true' else '') + ' -r ' + str(arg('bag_rate')) + ' ' + arg('rosbag_path'))"/>
+
+    <!-- 2) Delay SLAM stack, then enable use_sim_time before each node starts -->
+    <include file="$(find system)/launch/omni_livo.launch"
+             launch-prefix="bash -c 'sleep $(arg stack_start_delay); rosparam set /use_sim_time true; exec'">
+      <arg name="enable_livox" value="false"/>
+      <arg name="enable_lidars1" value="false"/>
+      <arg name="save_2d_grid" value="$(arg save_2d_grid)"/>
+    </include>
+
+    <!-- 3) Delay navigation stack (move_base, TF, optional nav rviz) -->
+    <include file="$(find nav_launch)/launch/launch_nav_sim.launch"
+             launch-prefix="bash -c 'sleep $(arg nav_start_delay); rosparam set /use_sim_time true; exec'">
+      <arg name="set_use_sim_time" value="false"/>
+      <arg name="home" value="$(arg home)"/>
+      <arg name="rviz" value="$(arg nav_rviz)"/>
+    </include>
+
+    <!-- 4) Delay edge uplink so SLAM topics are already flowing -->
+    <include file="$(find edge_node)/launch/edge_stitch.launch"
+             launch-prefix="bash -c 'sleep $(arg edge_start_delay); rosparam set /use_sim_time true; exec'">
+      <arg name="server_url" value="$(arg edge_server_url)"/>
+      <arg name="upload_url_template" value="$(arg edge_upload_url_template)"/>
+      <arg name="robot_id" value="$(arg edge_robot_id)"/>
+    </include>
+  </group>
+
+  <group unless="$(arg clock)">
+    <include file="$(find system)/launch/omni_livo.launch">
+      <arg name="enable_livox" value="false"/>
+      <arg name="enable_lidars1" value="false"/>
+      <arg name="save_2d_grid" value="$(arg save_2d_grid)"/>
+    </include>
+
+    <include file="$(find nav_launch)/launch/launch_nav_sim.launch">
+      <arg name="sim" value="false"/>
+      <arg name="home" value="$(arg home)"/>
+      <arg name="rviz" value="$(arg nav_rviz)"/>
+    </include>
+
+    <include file="$(find edge_node)/launch/edge_stitch.launch">
+      <arg name="server_url" value="$(arg edge_server_url)"/>
+      <arg name="upload_url_template" value="$(arg edge_upload_url_template)"/>
+      <arg name="robot_id" value="$(arg edge_robot_id)"/>
+    </include>
+
+    <node pkg="rosbag"
+          type="play"
+          name="play_omni_bag"
+          output="log"
+          args="$(eval ('-l ' if arg('loop') == 'true' else '') + '-r ' + str(arg('bag_rate')) + ' ' + arg('rosbag_path'))"/>
+  </group>
+</launch>

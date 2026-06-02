@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ROS Compressed Image Viewer</title>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/roslibjs/1.1.0/roslib.min.js"></script>
+    <style>
+        #debug-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        .status-error { color: #dc3545; }
+        .status-success { color: #28a745; }
+        .status-warning { color: #ffc107; }
+    </style>
+</head>
+<body>
+    <img id="compressed-image" width="1920" height="2400"
+         onerror="console.error('图像加载失败')">
+    
+    <div id="debug-info">
+        <h3>图像数据调试信息</h3>
+        <div id="data-output"></div>
+    </div>
+
+    <script>
+        // 1. 连接ROS WebSocket
+        const ros = new ROSLIB.Ros({ url: 'ws://192.168.1.2:9090' });
+
+        ros.on('connection', () => {
+            console.log("✅ 成功连接到ROS Bridge");
+            updateDebugInfo("连接状态", "已连接", "status-success");
+        });
+        
+        ros.on('error', (err) => {
+            console.error("❌ 连接错误:", err);
+            updateDebugInfo("连接状态", "错误: " + err.type, "status-error");
+        });
+        
+        ros.on('close', () => {
+            console.log("🔌 连接关闭");
+            updateDebugInfo("连接状态", "已断开", "status-warning");
+        });
+
+        // 2. 订阅压缩图像话题
+        const imageTopic = new ROSLIB.Topic({
+            ros: ros,
+            name: '/image_stitch/image_raw/compressed',
+            messageType: 'sensor_msgs/CompressedImage'
+        });
+
+        // 3. Base64解码函数
+        function base64ToUint8Array(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes;
+        }
+
+        // 4. 处理图像数据并添加调试输出
+        imageTopic.subscribe(message => {
+            console.log("📦 收到压缩图像消息:", message);
+            
+            // 在页面上显示关键元数据
+            updateDebugInfo("消息时间戳", `${message.header.stamp.secs}秒${message.header.stamp.nsecs}`);
+            updateDebugInfo("图像格式", message.format);
+            
+            // 检查数据格式并解码
+            let data;
+            if (typeof message.data === 'string' && message.data.startsWith('/9j/')) {
+                // Base64解码
+                updateDebugInfo("数据类型", "Base64编码", "status-warning");
+                data = base64ToUint8Array(message.data);
+                updateDebugInfo("解码后长度", `${data.length}字节`, "status-success");
+            } else if (message.data instanceof ArrayBuffer) {
+                // 二进制数据
+                updateDebugInfo("数据类型", "二进制数据", "status-success");
+                data = new Uint8Array(message.data);
+            } else {
+                updateDebugInfo("数据类型", "未知格式", "status-error");
+                return;
+            }
+            
+            // 显示数据首尾部分
+            const startBytes = Array.from(data.slice(0, 5)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+            const endBytes = Array.from(data.slice(-5)).map(b => b.toString(16).padStart(2, '0')).join(' ');
+            
+            updateDebugInfo("数据起始", startBytes + "...");
+            updateDebugInfo("数据结尾", "..." + endBytes);
+            
+            // JPEG文件头验证
+            if (startBytes.includes("ff d8 ff")) {
+                updateDebugInfo("JPEG验证", "✅ 有效的JPEG文件头", "status-success");
+            } else {
+                updateDebugInfo("JPEG验证", `⚠️ 异常文件头: ${startBytes}`, "status-error");
+            }
+
+            // 图像渲染逻辑
+            try {
+                // 动态确定MIME类型
+                const mimeType = message.format.includes('jpeg') ? 'image/jpeg' : 
+                                message.format.includes('png') ? 'image/png' : 'image/jpeg';
+                
+                const blob = new Blob([data], { type: mimeType });
+                const url = URL.createObjectURL(blob);
+                document.getElementById('compressed-image').src = url;
+                
+                // 释放内存
+                setTimeout(() => URL.revokeObjectURL(url), 1000);
+            } catch (e) {
+                console.error("Blob创建错误:", e);
+                updateDebugInfo("渲染错误", e.message, "status-error");
+            }
+        });
+
+        // 更新调试信息显示
+        function updateDebugInfo(title, content, statusClass = "") {
+            const outputDiv = document.getElementById('data-output');
+            let entry = document.getElementById(`debug-${title}`);
+            
+            if (!entry) {
+                entry = document.createElement('div');
+                entry.id = `debug-${title}`;
+                entry.innerHTML = `<strong>${title}:</strong> <span class="${statusClass}">${content}</span>`;
+                outputDiv.appendChild(entry);
+            } else {
+                const span = entry.querySelector('span');
+                span.textContent = content;
+                span.className = statusClass;
+            }
+        }
+    </script>
+</body>
+</html>

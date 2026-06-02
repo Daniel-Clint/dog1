@@ -1,0 +1,15 @@
+hector_exploration_planner:
+  security_constant: 0.3
+  min_obstacle_dist: 1 # 栅格数，降低阈值，允许进入较窄区域
+  plan_in_unknown: false
+  explore_close_to_path: false # 初始探索时不建议开启此约束
+  use_inflated_obstacles: true
+  goal_angle_penalty: 50
+  min_frontier_size: 10 # 栅格数，降低阈值，识别更小的前沿边界
+  dist_for_goal_reached: 0.3
+  same_frontier_distance: 0.25
+  obstacle_cutoff_distance: 1.0
+  use_observation_pose_calculation: true
+  observation_pose_desired_dist: 1.0
+  observation_pose_allowed_angle: 135.0
+  close_to_path_target_distance: 1.2

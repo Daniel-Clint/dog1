@@ -1,0 +1,32 @@
+resolution: 0.2
+
+map_frame: map
+body_frame: livox
+control_frame: baselink
+
+imu_topic: /livox/imu
+livox_topic: /livox/lidar
+
+mapping:
+  gyr_cov: 0.1
+  acc_cov: 0.1
+  b_gyr_cov: 0.0001
+  b_acc_cov: 0.0001
+  det_range: 100.0
+  extrinsic_T: [-0.011, -0.02329, 0.04412]
+  extrinsic_R: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  control_imu_T: [0.319, 0, 0.320]
+
+publish:
+  publish_body: true
+  publish_world: true
+
+localization:
+  is_localization: true
+  publish_cloud: true
+  rough_resolution: 0.1
+  refine_resolution: 0.05
+  rough_iter: 20
+  refine_iter: 10
+  conf_tresh: 0.05
+  # pcd_path: /home/zhouzhou/pcd/saved/scans.pcd

@@ -1,0 +1,135 @@
+TebLocalPlannerROS:
+  odom_topic: /aft_mapped_to_init
+  map_frame: map # 控制器的参考坐标系
+  teb_autosize: true
+  dt_ref: 0.3 # 控制器的采样时间差值
+  dt_hysteresis: 0.1 # dt的浮动范围
+  max_samples: 32 # 最大采样点数
+  global_plan_overwrite_orientation: true
+  allow_init_with_backwards_motion: false
+  max_global_plan_lookahead_dist: 3.0
+  global_plan_viapoint_sep: -1
+  global_plan_prune_distance: 0.5 # 从全局路径中删除的距离（后面距离车1m的所有点）
+  exact_arc_length: false
+  feasibility_check_no_poses: 3 # 从当前位置开始检查的点数，用于判断是否可通行
+  publish_feedback: false
+  force_reinit_new_goal_dist: 1.0
+  force_reinit_new_goal_angular: 1.0
+  # Robot
+
+  max_vel_x: 1. # x最大线速度
+  max_vel_x_backwards: 0.3 #x最大后向线速度
+  acc_lim_x: 0.64 # x向最大加速度
+  max_vel_y: 0.5 # y最大线速度
+  acc_lim_y: 0.32 # y向最大加速度
+
+  max_vel_theta: 1.0 # 最大角速度，转向半径 r = v / omega
+  acc_lim_theta: 0.96 # 最大角加速度
+
+  # ********************** Carlike robot parameters ********************
+  # 开启全向模式
+  holonomic_robot: True
+  min_turning_radius: 0.3 # 最小转向半径
+  # wheelbase: 0.496 # 前后轴距,如果cmd_angle_instead_rotvel=fasle，则参数无效
+  cmd_angle_instead_rotvel: false # 是否使用角度控制，否则使用角速度控制
+  # ********************************************************************
+
+  footprint_model: # types: "point", "circular", "two_circles", "line", "polygon"
+    type: "polygon"
+    vertices:
+      [[-0.32, -0.20], [-0.32, 0.20], [0.32, 0.20], [0.32, -0.20]]
+
+  # GoalTolerance
+
+  xy_goal_tolerance: 0.2 #目标位置的容差
+  yaw_goal_tolerance: 0.5 #目标角度的容差
+  free_goal_vel: false # 是否允许目标速度不为0
+  complete_global_plan: true # 是否要求全局路径规划器规划到目标点
+
+  # Obstacles
+
+  min_obstacle_dist: 0.1 # 最小障碍物距离
+  inflation_dist: 0.20 # 障碍物膨胀距离
+  include_costmap_obstacles: true # 是否考虑代价地图中的障碍物
+  costmap_obstacles_behind_robot_dist: 2.0 # 车辆后方的障碍物距离阈值
+  obstacle_poses_affected: 8
+
+  dynamic_obstacle_inflation_dist: 0.6 # 动态障碍物膨胀距离
+  include_dynamic_obstacles: true # 是否考虑动态障碍物
+
+  costmap_converter_plugin: ""
+  costmap_converter_spin_thread: true
+  costmap_converter_rate: 1
+
+  # costmap_converter/CostmapToLinesDBSRANSAC:
+  #   cluster_max_distance: 0.4
+  #   cluster_min_pts: 3
+  #   ransac_inlier_distance: 0.15
+  #   ransac_min_inliers: 10
+  #   ransac_no_iterations: 1000
+  #   ransac_remainig_outliers: 3
+  #   ransac_convert_outlier_pts: true
+  #   ransac_filter_remaining_outlier_pts: false
+  #   convex_hull_min_pt_separation: 0.1
+
+  # Optimization
+
+  no_inner_iterations: 5
+  no_outer_iterations: 4
+  optimization_activate: true
+  optimization_verbose: false
+  penalty_epsilon: 0.1
+  weight_max_vel_x: 2
+  weight_acc_lim_x: 1.0
+
+  weight_jerk_lin: 0.0
+  weight_jerk_rot: 0.0
+
+  weight_max_vel_theta: 1.0
+  weight_acc_lim_theta: 1.0
+  weight_kinematics_nh: 0.0
+
+  weight_kinematics_forward_drive: 10.0
+  weight_kinematics_turning_radius: 5.0
+  weight_optimaltime: 2.0
+  weight_shortest_path: 0.0
+  weight_obstacle: 50.0
+  weight_inflation: 1 # 增加软代价权重，让局部动态避障也偏向于远离障碍物
+  weight_dynamic_obstacle: 50 # not in use yet
+  weight_dynamic_obstacle_inflation: 0.1
+  weight_viapoint: 1.0
+  weight_adapt_factor: 2
+  obstacle_cost_exponent: 1.0
+
+  # Homotopy Class Planner
+
+  enable_homotopy_class_planning: false
+  enable_multithreading: true
+  max_number_classes: 1
+  selection_cost_hysteresis: 1.0
+  selection_prefer_initial_plan: 0.95
+  selection_obst_cost_scale: 1.0
+  selection_alternative_time_cost: false
+
+  roadmap_graph_no_samples: 15
+  roadmap_graph_area_width: 5
+  roadmap_graph_area_length_scale: 1.0
+  h_signature_prescaler: 0.5
+  h_signature_threshold: 0.1
+  obstacle_heading_threshold: 0.45
+  switching_blocking_period: 0.0
+  viapoints_all_candidates: true
+  delete_detours_backwards: true
+  max_ratio_detours_duration_best_duration: 3.0
+  visualize_hc_graph: false
+  visualize_with_time_as_z_axis_scale: false
+
+  # Recovery
+
+  shrink_horizon_backup: true
+  shrink_horizon_min_duration: 10
+  oscillation_recovery: true
+  oscillation_v_eps: 0.1
+  oscillation_omega_eps: 0.1
+  oscillation_recovery_min_duration: 10
+  oscillation_filter_duration: 10

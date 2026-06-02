@@ -1,0 +1,25 @@
+<launch>
+    <arg name="loop" default="false" />
+    <arg name="clock" default="false" />
+    <arg name="bag_rate" default="1.0" />
+    <arg name="bag_path" default="$(env HOME)/Downloads/omni_sensors_20260416_173948.bag" />
+
+    <rosparam command="load" file="$(find fast_livo)/config/mid360_multi_cam.yaml" />
+
+    <node pkg="fast_livo"
+          type="fastlivo_mapping"
+          name="laserMapping"
+          output="screen"
+          required="true"
+          launch-prefix="gdb -batch -ex run -ex bt -ex 'thread apply all bt full' --args">
+        <param name="visual_en" type="bool" value="true" />
+        <param name="cam_num" type="int" value="2" />
+        <rosparam command="load" file="$(find fast_livo)/config/camera_intrinsics.yaml" />
+    </node>
+
+    <node pkg="rosbag"
+          type="play"
+          name="play_omni_bag"
+          output="screen"
+          args="$(eval ('--clock ' if arg('clock') == 'true' else '') + ('-l ' if arg('loop') == 'true' else '') + '-r ' + str(arg('bag_rate')) + ' ' + arg('bag_path'))" />
+</launch>

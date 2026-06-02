@@ -1,0 +1,111 @@
+common:
+  lid_topic: "/hesai/pandar"
+  imu_topic: "/alphasense/imu"
+  img_en: 1
+  lidar_en: 1
+  ros_driver_bug_fix: false
+
+extrin_calib:
+  extrinsic_T: [-0.001, -0.00855, 0.055]
+  extrinsic_R: [0, -1, 0,
+                -1, 0, 0,
+                0, 0, -1]
+#  extrinsic_T: [-0.006730146149038548, -0.006897049862999071, 0.049898628062256645]
+#  extrinsic_R: [0.006609639848469365, -0.9999773650294649, 0.0012578115132016717,
+#                -0.9999762249571927, -0.006612093869054189, -0.0019569708811106104,
+#                0.001965243352927244, -0.0012448467359610184, -0.9999972940839232]
+
+# Multi-camera extrinsics: camera-to-LiDAR transformation
+  cameras:
+    - cam_id: 0
+      img_topic: "/alphasense/cam0/image_raw"
+      Rcl: [-0.99993, -0.00671, 0.01011,
+            -0.01009, -0.00243, -0.99995,
+            0.00673, -0.99997, 0.00236]
+      Pcl: [-0.04748, 0.06760, -0.05966]
+
+    - cam_id: 1
+      img_topic: "/alphasense/cam3/image_raw"
+      Rcl: [-0.00740, 0.99989, -0.01272,
+            0.00236, -0.01271, -0.99992,
+            -0.99997, -0.00743, -0.00227]
+      Pcl: [0.00622, 0.06607, -0.05812]
+
+    - cam_id: 2
+      img_topic: "/alphasense/cam4/image_raw"
+      Rcl: [0.00094, -0.99999, 0.00480,
+            0.00219, -0.00480, -0.99999,
+            1.00000, 0.00095, 0.00219]
+      Pcl: [-0.00240, 0.07166, -0.07399]
+
+time_offset:
+  imu_time_offset: 0.0
+  img_time_offset: 0.0
+  exposure_time_init: 0.0
+
+preprocess:
+  point_filter_num: 1
+  filter_size_surf: 0.1 # 0.2
+  lidar_type: 5 # HesaiXT32
+  scan_line: 32
+  blind: 0.3 # 0.1 0.3
+
+
+
+vio:
+  max_iterations: 5
+  outlier_threshold: 100
+  img_point_cov: 1000
+  patch_size: 4
+  patch_pyrimid_level: 4
+  normal_en: true
+  raycast_en: false
+  inverse_composition_en: false
+  exposure_estimate_en: true
+  inv_expo_cov: 0.1
+  enable_cross_camera_tracking: true   # Enable cross-camera tracking (multi-camera system)
+  enable_dynamic_covariance: true
+  dynamic_cov_error_max: 100
+  max_cov_scale: 1500.0  
+  min_cov_scale: 500.0
+  max_total_points: 300               # Maximum total points across all cameras
+
+imu:
+  imu_en: true
+  imu_int_frame: 30
+  acc_cov: 0.6 # 0.1
+  gyr_cov: 0.001
+  b_acc_cov: 0.0001 # 0.1
+  b_gyr_cov: 0.0001 # 0.1
+
+lio:
+  max_iterations: 5
+  dept_err: 0.02
+  beam_err: 0.05
+  min_eigen_value: 0.0001 # 0.0025
+  voxel_size: 0.5
+  max_layer: 2
+  max_points_num: 100
+  layer_init_num: [5, 5, 5, 5, 5]
+
+uav:
+  imu_rate_odom: false
+  gravity_align_en: false
+
+publish:
+  dense_map_en: true
+  pub_effect_point_en: false
+  pub_plane_en: false
+  pub_scan_num: 1
+  blind_rgb_points: 0.0
+
+evo:
+  seq_name: "frame_pose"
+  pose_output_en: true
+
+pcd_save:
+  pcd_save_en: false
+  colmap_output_en: false
+  filter_size_pcd: 0.15
+  interval: -1
+

@@ -1,0 +1,22 @@
+<launch>
+  <arg name="enable_livox" default="true"/>
+  <arg name="enable_lidars1" default="true"/>
+  <arg name="save_2d_grid" default="true"/>
+
+  <group if="$(arg enable_livox)">
+    <include file="$(find livox_ros_driver2)/launch_ROS1/rviz_MID360.launch">
+      <arg name="rviz_enable" value="false"/>
+    </include>
+  </group>
+
+  <group if="$(arg enable_lidars1)">
+    <include file="$(find lidars1)/launch/lidars1.launch"/>
+  </group>
+
+  <include file="$(find fast_livo)/launch/fast_livo_mid360.launch"/>
+
+  <include file="$(find light_terrain_analysis)/launch/light_terrain_analysis.launch">
+    <arg name="save_2d_grid" value="$(arg save_2d_grid)"/>
+    <arg name="save_dir" value="$(find system)/map/2d_grid"/>
+  </include>
+</launch>

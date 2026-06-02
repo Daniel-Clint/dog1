@@ -1,0 +1,35 @@
+services:
+  - {name: GlobalPlanner, url: /move_base/GlobalPlanner/set_parameters}
+  - {name: TebLocalPlannerROS, url: /move_base/TebLocalPlannerROS/set_parameters}
+  - {name: local_costmap, url: /move_base/local_costmap/set_parameters}
+  - {name: move_base, url: /move_base/set_parameters}
+
+GlobalPlanner:
+  - {name: orientation_mode, type: int, value: 0}
+
+TebLocalPlannerROS:
+  - {name: global_plan_overwrite_orientation, type: bool, value: true}
+  - {name: allow_init_with_backwards_motion, type: bool, value: false}
+  - {name: weight_kinematics_forward_drive, type: double, value: 10.0}
+  - {name: max_vel_x, type: double, value: 1.45}
+  - {name: acc_lim_x, type: double, value: 0.64}
+  - {name: max_vel_theta, type: double, value: 1.28}
+  - {name: acc_lim_theta, type: double, value: 0.8}
+  - {name: max_vel_x_backwards, type: double, value: 0.2}
+  - {name: min_obstacle_dist, type: double, value: 0.25}
+  - {name: inflation_dist, type: double, value: 1.5}
+  - {name: weight_kinematics_nh, type: double, value: 1000.0}
+  - {name: min_turning_radius, type: double, value: 0.86}
+  - {name: feasibility_check_no_poses, type: int, value: 3}
+  - {name: weight_acc_lim_x, type: double, value: 5.0}
+  - {name: weight_acc_lim_theta, type: double, value: 5.0}
+  - {name: force_reinit_new_goal_dist, type: double, value: 1.0}
+
+local_costmap:
+  - {name: width, type: int, value: 8}
+  - {name: height, type: int, value: 8}
+  - {name: resolution, type: double, value: 0.1}
+  - {name: update_frequency, type: double, value: 5.0}
+move_base:
+  - {name: controller_frequency, type: double, value: 5.0}
+  - {name: planner_frequency, type: double, value: 0.2}	

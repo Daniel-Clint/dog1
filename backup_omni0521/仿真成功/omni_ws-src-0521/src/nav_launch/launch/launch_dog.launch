@@ -1,0 +1,36 @@
+<launch>
+    <!-- <include file="$(find livox_ros_driver2)/launch_ROS1/msg_MID360.launch"/> -->
+    <!-- <include file="$(find ranger_bringup)/launch/ranger_mini_v2.launch"/> -->
+    <arg name="sim" default="false"/>
+    <arg name="home" default="/home/xf"/>
+	<arg name="filename" value="$(arg home)/Downloads/map/map.yaml"/>
+    <arg name="rviz" default="true" />
+
+    <param name="use_sim_time" value="$(arg sim)" />
+    <param name="home_dir" value="$(arg home)"/>
+
+    <rosparam command="load" file="$(find nav_launch)/config/localize.yaml" />
+    
+    <node pkg="fastlio" type="localizer_node" name="localizer_node" output="screen"/>
+
+    <node name="map_server" pkg="map_server" type="map_server" args="$(arg filename)" />
+
+    <rosparam file="$(find nav_launch)/params/plugins.yaml" command="load"/>
+
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" clear_params="true">
+        <rosparam file="$(find nav_launch)/params/move_base_params.yaml" command="load"/>
+        <rosparam file="$(find nav_launch)/params/costmap_common_params.yaml" command="load" ns="global_costmap" />
+        <rosparam file="$(find nav_launch)/params/costmap_common_params.yaml" command="load" ns="local_costmap" />
+        <rosparam file="$(find nav_launch)/params/local_costmap_params.yaml" command="load" />
+        <rosparam file="$(find nav_launch)/params/global_costmap_params.yaml" command="load" />
+        <rosparam file="$(find nav_launch)/params/global_planner_params.yaml" command="load" />
+        <rosparam file="$(find nav_launch)/params/teb_local_planner_params.yaml" command="load" />
+        <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+        <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
+    </node>
+    
+    
+    <group if="$(arg rviz)">
+        <node launch-prefix="nice" pkg="rviz" type="rviz" name="rviz" args="-d $(find nav_launch)/rviz_cfg/navigation.rviz" />	
+    </group>
+</launch>
